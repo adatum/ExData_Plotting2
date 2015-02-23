@@ -1,4 +1,4 @@
-# plot1.R
+# plot2.R
 # Exploratory Data Analysis: Course Project 2
 # Author: adatum
 #
@@ -30,18 +30,19 @@ if(!exists("NEI") & !exists("SCC")){
 
 tot_e <- NEI %>% 
         group_by(year) %>% 
+        filter(fips == "24510") %>%
         filter(year %in% c(1999, 2002, 2005, 2008)) %>% 
         summarize(total_emissions = sum(Emissions))
 
-png("plot1.png")
+png("plot2.png")
 
 barplot(tot_e$total_emissions, 
         names.arg = tot_e$year,
         col = "darkblue",
-        main = expression("Total emissions from " * PM[2.5] * " in United States"),
+        main = expression("Total emissions from " * PM[2.5] * " in Baltimore City, Maryland"),
         xlab = "Year",
         ylab = "Total emissions [ton]"
-        )
+)
 
 dev.off()
 
