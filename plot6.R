@@ -1,4 +1,4 @@
-# plot3.R
+# plot6.R
 # Exploratory Data Analysis: Course Project 2
 # Author: adatum
 #
@@ -29,24 +29,28 @@ if(!exists("NEI") & !exists("SCC")){
         SCC <- readRDS(fileSCC)
 }
 
-tot_e <- NEI %>% 
-        group_by(year, type) %>% 
-        filter(fips == "24510") %>% # Baltimore City, Maryland
-        filter(year %in% c(1999, 2002, 2005, 2008)) %>% # unnecessary
-        summarize(total_emissions = sum(Emissions))
+# identify motor vehicle-related SCCs in the EI.Sector column of SCC
+vehicleSCC <- droplevels(SCC$SCC[grep("Vehicle", SCC$EI.Sector)])
 
-png("plot3.png")
+tot_e <- NEI %>%
+        group_by(year, fips) %>%
+        filter(fips == "24510" | fips == "06037") %>% # Baltimore City or Los Angeles
+        filter(SCC %in% vehicleSCC) %>%
+        filter(year >= 1999 & year <= 2008) %>% # unnecessary
+        summarize(total_emissions = sum(Emissions)) %>%
+        mutate(city = plyr::mapvalues(fips, c("24510", "06037"), c("Baltimore City", "Los Angeles")))
+
+png("plot6.png")
 
 qplot(year, total_emissions, data = tot_e, 
-      shape = type, 
+      shape = city, 
       geom = c("point", "line"),
-      main = expression("Total " * PM[2.5] * " emissions in Baltimore City by source type"),
+      main = expression(PM[2.5] * " emissions from motor vehicles in Baltimore City and Los Angeles"),
       xlab = "Year",
       ylab = "Total emissions [ton]"
-      ) + 
+) + 
         theme_bw(base_family = "Times", base_size = 12) +
-        theme(legend.position = c(.85,.85),
-              legend.background = element_rect(fill="transparent")) +
-        scale_shape_discrete(name="Source type")
+        theme(legend.position = c(.85,.5),
+              legend.background = element_rect(fill="transparent"))
 
 dev.off()

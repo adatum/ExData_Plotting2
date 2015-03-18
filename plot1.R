@@ -30,7 +30,7 @@ if(!exists("NEI") & !exists("SCC")){
 
 tot_e <- NEI %>% 
         group_by(year) %>% 
-        filter(year %in% c(1999, 2002, 2005, 2008)) %>% 
+        filter(year %in% c(1999, 2002, 2005, 2008)) %>% # unnecessary
         summarize(total_emissions = sum(Emissions))
 
 png("plot1.png")
@@ -38,7 +38,7 @@ png("plot1.png")
 barplot(tot_e$total_emissions, 
         names.arg = tot_e$year,
         col = "darkblue",
-        main = expression("Total emissions from " * PM[2.5] * " in United States"),
+        main = expression("Total " * PM[2.5] * " emissions in United States"),
         xlab = "Year",
         ylab = "Total emissions [ton]"
         )

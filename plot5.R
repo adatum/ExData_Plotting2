@@ -1,4 +1,4 @@
-# plot2.R
+# plot5.R
 # Exploratory Data Analysis: Course Project 2
 # Author: adatum
 #
@@ -28,21 +28,24 @@ if(!exists("NEI") & !exists("SCC")){
         SCC <- readRDS(fileSCC)
 }
 
-tot_e <- NEI %>% 
-        group_by(year) %>% 
+# identify motor vehicle-related SCCs in the EI.Sector column of SCC
+vehicleSCC <- droplevels(SCC$SCC[grep("Vehicle", SCC$EI.Sector)])
+
+tot_e <- NEI %>%
+        group_by(year) %>%
         filter(fips == "24510") %>% # Baltimore City, Maryland
-        filter(year %in% c(1999, 2002, 2005, 2008)) %>% # unnecessary
+        filter(SCC %in% vehicleSCC) %>%
+        filter(year >= 1999 & year <= 2008) %>% # unnecessary
         summarize(total_emissions = sum(Emissions))
 
-png("plot2.png")
+png("plot5.png")
 
 barplot(tot_e$total_emissions, 
         names.arg = tot_e$year,
         col = "darkblue",
-        main = expression("Total " * PM[2.5] * " emissions in Baltimore City, Maryland"),
+        main = expression("Total " * PM[2.5] * " emissions from motor vehicles in Baltimore City, Maryland"),
         xlab = "Year",
         ylab = "Total emissions [ton]"
 )
 
 dev.off()
-
